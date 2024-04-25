@@ -23,6 +23,9 @@ import java.util.Optional;
 
 final class Tracing
 {
+    @SuppressWarnings("deprecation")
+    private static final AttributeKey<Boolean> EXCEPTION_ESCAPED = SemanticAttributes.EXCEPTION_ESCAPED;
+
     private Tracing() {}
 
     public static <T> Attributes attribute(AttributeKey<T> key, Optional<T> optionalValue)
@@ -48,7 +51,7 @@ final class Tracing
         }
         catch (Throwable t) {
             span.setStatus(StatusCode.ERROR, t.getMessage());
-            span.recordException(t, Attributes.of(SemanticAttributes.EXCEPTION_ESCAPED, true));
+            span.recordException(t, Attributes.of(EXCEPTION_ESCAPED, true));
             throw t;
         }
         finally {
