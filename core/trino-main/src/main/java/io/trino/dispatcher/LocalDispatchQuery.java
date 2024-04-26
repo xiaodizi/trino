@@ -324,7 +324,7 @@ public class LocalDispatchQuery
         try {
             return tryGetFutureValue(queryExecutionFuture);
         }
-        catch (Exception ignored) {
+        catch (Exception _) {
             return Optional.empty();
         }
         catch (Error e) {
