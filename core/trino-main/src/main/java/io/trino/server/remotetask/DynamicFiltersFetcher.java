@@ -162,7 +162,7 @@ class DynamicFiltersFetcher
         @Override
         public void success(VersionedDynamicFilterDomains newDynamicFilterDomains)
         {
-            try (SetThreadName ignored = new SetThreadName("DynamicFiltersFetcher-%s", taskId)) {
+            try (SetThreadName _ = new SetThreadName("DynamicFiltersFetcher-%s", taskId)) {
                 updateStats(requestStartNanos);
                 try {
                     updateDynamicFilterDomains(newDynamicFilterDomains);
@@ -178,7 +178,7 @@ class DynamicFiltersFetcher
         @Override
         public void failed(Throwable cause)
         {
-            try (SetThreadName ignored = new SetThreadName("DynamicFiltersFetcher-%s", taskId)) {
+            try (SetThreadName _ = new SetThreadName("DynamicFiltersFetcher-%s", taskId)) {
                 updateStats(requestStartNanos);
                 try {
                     errorTracker.requestFailed(cause);
@@ -200,7 +200,7 @@ class DynamicFiltersFetcher
         @Override
         public void fatal(Throwable cause)
         {
-            try (SetThreadName ignored = new SetThreadName("DynamicFiltersFetcher-%s", taskId)) {
+            try (SetThreadName _ = new SetThreadName("DynamicFiltersFetcher-%s", taskId)) {
                 updateStats(requestStartNanos);
                 onFail.accept(cause);
             }
