@@ -63,11 +63,11 @@ public class TestSharedGlueMetastore
     {
         Session icebergSession = testSessionBuilder()
                 .setCatalog(ICEBERG_CATALOG)
-                .setSchema(schema)
+                .setSchema(tpchSchema)
                 .build();
         Session hiveSession = testSessionBuilder()
                 .setCatalog(HIVE_CATALOG)
-                .setSchema(schema)
+                .setSchema(tpchSchema)
                 .build();
 
         QueryRunner queryRunner = DistributedQueryRunner.builder(icebergSession).build();
@@ -101,9 +101,10 @@ public class TestSharedGlueMetastore
                 "hive",
                 ImmutableMap.of("hive.iceberg-catalog-name", "iceberg"));
 
-        queryRunner.execute("CREATE SCHEMA " + schema + " WITH (location = '" + dataDirectory.toUri() + "')");
+        queryRunner.execute("CREATE SCHEMA " + tpchSchema + " WITH (location = '" + dataDirectory.toUri() + "')");
         copyTpchTables(queryRunner, "tpch", TINY_SCHEMA_NAME, icebergSession, ImmutableList.of(TpchTable.NATION));
         copyTpchTables(queryRunner, "tpch", TINY_SCHEMA_NAME, hiveSession, ImmutableList.of(TpchTable.REGION));
+        queryRunner.execute("CREATE SCHEMA " + testSchema + " WITH (location = '" + dataDirectory.toUri() + "')");
 
         return queryRunner;
     }
@@ -114,11 +115,12 @@ public class TestSharedGlueMetastore
         try {
             if (glueMetastore != null) {
                 // Data is on the local disk and will be deleted by the deleteOnExit hook
-                glueMetastore.dropDatabase(schema, false);
+                glueMetastore.dropDatabase(tpchSchema, false);
+                glueMetastore.dropDatabase(testSchema, false);
             }
         }
         catch (Exception e) {
-            LOG.error(e, "Failed to clean up Glue database: %s", schema);
+            LOG.error(e, "Failed to clean up Glue database: %s", tpchSchema);
         }
     }
 
@@ -130,7 +132,7 @@ public class TestSharedGlueMetastore
                 "   location = '%s'\n" +
                 ")";
 
-        return format(expectedHiveCreateSchema, catalogName, schema, dataDirectory.toUri());
+        return format(expectedHiveCreateSchema, catalogName, tpchSchema, dataDirectory.toUri());
     }
 
     @Override
@@ -140,6 +142,6 @@ public class TestSharedGlueMetastore
                 "WITH (\n" +
                 "   location = '%s'\n" +
                 ")";
-        return format(expectedIcebergCreateSchema, catalogName, schema, dataDirectory.toUri());
+        return format(expectedIcebergCreateSchema, catalogName, tpchSchema, dataDirectory.toUri());
     }
 }
