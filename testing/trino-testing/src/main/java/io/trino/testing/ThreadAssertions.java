@@ -98,6 +98,10 @@ public final class ThreadAssertions
                 .filter(thread -> !thread.getName().equals("testcontainers-ryuk"))
                 // org.testcontainers.containers.wait.strategy.AbstractWaitStrategy.EXECUTOR
                 .filter(thread -> !thread.getName().startsWith("testcontainers-wait-"))
+                // org.testcontainers.images.TimeLimitedLoggedPullImageResultCallback.PROGRESS_WATCHDOG_EXECUTOR
+                .filter(thread -> !thread.getName().startsWith("testcontainers-pull-watchdog-"))
+                // com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.cleanupThreadExecutorService
+                .filter(thread -> !thread.getName().equals("mysql-cj-abandoned-connection-cleanup"))
                 // com.clickhouse.data.ClickHouseDataStreamFactory.DefaultExecutors
                 .filter(thread -> !thread.getName().startsWith("ClickHouseWorker-") && !thread.getName().startsWith("ClickHouseScheduler-"))
                 // These are likely to be statically managed, not considered a leak. We probably wouldn't see them if we had a dry run
